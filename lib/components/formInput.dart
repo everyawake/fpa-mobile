@@ -6,6 +6,7 @@ class MyInputFormField extends StatelessWidget {
     @required this.validator,
     @required this.labelText,
     this.onSaved,
+    this.initialValue,
     this.hintText,
     this.autofocus = false,
     this.obsecureText = false,
@@ -20,6 +21,7 @@ class MyInputFormField extends StatelessWidget {
   final Function(String) validator;
   final Function(String) onSaved;
   final Function(String) onFieldSubmitted;
+  final String initialValue;
   final String labelText;
   final String hintText;
   final bool autofocus;
@@ -34,6 +36,7 @@ class MyInputFormField extends StatelessWidget {
   Widget build(BuildContext context) {
     return TextFormField(
       autofocus: this.autofocus,
+      initialValue: this.initialValue,
       decoration: InputDecoration(
         labelText: this.labelText,
         labelStyle: TextStyle(

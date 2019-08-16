@@ -13,9 +13,7 @@ class SolidButton extends StatelessWidget {
         child: Text(
           this.text,
         ),
-        onPressed: () {
-          this.onClick();
-        },
+        onPressed: this.onClick,
         color: Color(0xFF63DBD6),
         textColor: Colors.white,
         shape:

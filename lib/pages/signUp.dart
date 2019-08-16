@@ -1,7 +1,13 @@
-import 'package:FPA/components/formInput.dart';
-import 'package:FPA/components/solidButtons.dart';
+import 'dart:convert';
+
+import 'package:FPA/helpers/authToken.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import "package:device_id/device_id.dart";
+import 'package:http/http.dart' as http;
+
+import 'package:FPA/components/formInput.dart';
 import "package:FPA/helpers/validators.dart";
 
 class SignUp extends StatefulWidget {
@@ -23,8 +29,17 @@ class SignUpState extends State<SignUp> {
   final FocusNode _repasswordFocus = FocusNode();
   final FocusNode _usernameFocus = FocusNode();
   TextEditingController _passwordController = new TextEditingController();
+  FirebaseMessaging _firebaseMessaging = new FirebaseMessaging();
 
   UserData _data = new UserData();
+
+  @override
+  void initState() {
+    super.initState();
+    _firebaseMessaging.getToken().then((token) {
+      this._data._fcmToken = token;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -132,9 +147,9 @@ class SignUpState extends State<SignUp> {
           ),
         ),
       ),
-      bottomNavigationBar: BottomSignUpSubmitButton(
+      bottomNavigationBar: SubmitButton(
         formKey: _formKey,
-        userData: this._data,
+        userData: _data,
       ),
     );
   }
@@ -147,33 +162,95 @@ class SignUpState extends State<SignUp> {
   }
 }
 
-class BottomSignUpSubmitButton extends StatelessWidget {
-  BottomSignUpSubmitButton({@required this.formKey, @required this.userData});
+class SubmitButton extends StatefulWidget {
+  SubmitButton({@required this.formKey, @required this.userData, Key key})
+      : super(key: key);
 
   final GlobalKey<FormState> formKey;
   final UserData userData;
 
   @override
+  SubmitButtonState createState() => SubmitButtonState(
+        formKey: formKey,
+        userData: userData,
+      );
+}
+
+class SubmitButtonState extends State<SubmitButton> {
+  SubmitButtonState({@required this.formKey, @required this.userData});
+
+  final GlobalKey<FormState> formKey;
+  final UserData userData;
+  bool isLoading = false;
+
+  @override
   Widget build(BuildContext context) {
-    return SolidButton(
-      text: "가입하기",
-      onClick: () {
-        if (formKey.currentState.validate()) {
-          formKey.currentState.save();
-          Scaffold.of(context).showSnackBar(
-            SnackBar(
-              content: Text("Valid!!"),
-            ),
-          );
-        } else {
-          Scaffold.of(context).showSnackBar(
-            SnackBar(
-              content: Text("Invalid!!"),
-            ),
-          );
-        }
-      },
+    return RaisedButton(
+      child: _renderButtonConent(),
+      onPressed: isLoading
+          ? null
+          : () {
+              if (formKey.currentState.validate()) {
+                formKey.currentState.save();
+                this._submitSignUp(context);
+              }
+            },
+      color: Color(0xFF63DBD6),
+      textColor: Colors.white,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
     );
+  }
+
+  Widget _renderButtonConent() {
+    if (this.isLoading) {
+      return SizedBox(
+        child: new CircularProgressIndicator(
+            valueColor: new AlwaysStoppedAnimation(Colors.white),
+            strokeWidth: 2.0),
+        height: 20.0,
+        width: 20.0,
+      );
+    }
+    return Text("회원가입");
+  }
+
+  _submitSignUp(BuildContext ctx) async {
+    var url = "http://192.168.1.192:3000/users/signup";
+    var client = new http.Client();
+    setState(() {
+      isLoading = true;
+    });
+
+    var deviceUUID = await DeviceId.getID;
+    try {
+      var response = await client.post(url, body: {
+        "id": this.userData.email,
+        "username": this.userData.username,
+        "device_uuid": deviceUUID,
+        "fcm_token": this.userData.fcmToken,
+        "email": this.userData.email,
+        "password": this.userData.password
+      });
+
+      var message = "회원가입에 실패했습니다!";
+      if (response.statusCode == 201) {
+        message = "회원가입 완료!";
+      }
+
+      Scaffold.of(ctx).showSnackBar(
+        SnackBar(
+          content: Text(message),
+        ),
+      );
+
+      Navigator.of(context)
+          .pushReplacementNamed("/signin", arguments: this.userData);
+    } finally {
+      client.close();
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 }
 
@@ -190,14 +267,17 @@ class UserData {
   String _email = "";
   String _password = "";
   String _username = "";
+  String _fcmToken = "";
 
-  UserData({String email, String password, String username}) {
+  UserData({String email, String password, String username, String fcmToken}) {
     this._email = email;
     this._password = password;
     this._username = username;
+    this._fcmToken = fcmToken;
   }
 
   get email => _email;
   get password => _password;
   get username => _username;
+  get fcmToken => _fcmToken;
 }
