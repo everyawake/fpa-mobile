@@ -2,6 +2,7 @@ import 'package:FPA/components/formInput.dart';
 import 'package:FPA/components/solidButtons.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import "package:FPA/helpers/validators.dart";
 
 class SignUp extends StatefulWidget {
   SignUp({Key key}) : super(key: key);
@@ -44,12 +45,7 @@ class SignUpState extends State<SignUp> {
             child: Column(
               children: <Widget>[
                 MyInputFormField(
-                  validator: (value) {
-                    if (value.isEmpty) {
-                      return 'Please enter some text';
-                    }
-                    return null;
-                  },
+                  validator: validateEmail,
                   onSaved: (value) {
                     this._data._email = value;
                     setState(() {
@@ -69,12 +65,7 @@ class SignUpState extends State<SignUp> {
                 Padding(
                   padding: const EdgeInsets.only(top: 20.0),
                   child: MyInputFormField(
-                    validator: (value) {
-                      if (value.isEmpty) {
-                        return 'Please enter some text';
-                      }
-                      return null;
-                    },
+                    validator: validatePassword,
                     onSaved: (value) {
                       this._data._password = value;
                       setState(() {
@@ -84,6 +75,7 @@ class SignUpState extends State<SignUp> {
                     labelText: "비밀번호(Password)",
                     hintText: "비밀번호를 입력해주세요(6~20자 내)",
                     obsecureText: true,
+                    maxLength: 20,
                     textInputType: TextInputAction.next,
                     focusNode: _passwordFocus,
                     onFieldSubmitted: (term) {
@@ -97,7 +89,9 @@ class SignUpState extends State<SignUp> {
                   padding: const EdgeInsets.only(top: 20.0),
                   child: MyInputFormField(
                     validator: (value) {
-                      if (value.isEmpty || _password != value) {
+                      var passwordValidator = validatePassword(value);
+                      if (passwordValidator != null) return passwordValidator;
+                      if (_password != value) {
                         return 'Please enter some text';
                       }
                       return null;
@@ -105,6 +99,7 @@ class SignUpState extends State<SignUp> {
                     labelText: "비밀번호 재입력(Re-Password)",
                     hintText: "비밀번호를 다시 입력하세요",
                     obsecureText: true,
+                    maxLength: 20,
                     textInputType: TextInputAction.next,
                     focusNode: _repasswordFocus,
                     onFieldSubmitted: (term) {
@@ -116,12 +111,7 @@ class SignUpState extends State<SignUp> {
                 Padding(
                   padding: const EdgeInsets.only(top: 20.0),
                   child: MyInputFormField(
-                    validator: (value) {
-                      if (value.isEmpty) {
-                        return 'Please enter some text';
-                      }
-                      return null;
-                    },
+                    validator: validateUsername,
                     onSaved: (value) {
                       this._data._username = value;
                       setState(() {

@@ -14,6 +14,7 @@ class MyInputFormField extends StatelessWidget {
     this.focusNode,
     this.keyboardType,
     this.controller,
+    this.maxLength,
   });
 
   final Function(String) validator;
@@ -27,6 +28,7 @@ class MyInputFormField extends StatelessWidget {
   final FocusNode focusNode;
   final TextInputType keyboardType;
   final TextEditingController controller;
+  final int maxLength;
 
   @override
   Widget build(BuildContext context) {
@@ -62,6 +64,7 @@ class MyInputFormField extends StatelessWidget {
       onSaved: this.onSaved,
       keyboardType: this.keyboardType,
       controller: this.controller,
+      maxLength: this.maxLength,
     );
   }
 }
