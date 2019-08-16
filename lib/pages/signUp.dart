@@ -276,8 +276,13 @@ class UserData {
     this._fcmToken = fcmToken;
   }
 
-  get email => _email;
-  get password => _password;
-  get username => _username;
-  get fcmToken => _fcmToken;
+  String get email => _email;
+  String get password => _password;
+  String get username => _username;
+  String get fcmToken => _fcmToken;
+
+  setEmail(String value) => _email = value;
+  setPassword(String value) => _password = value;
+  setUsername(String value) => _username = value;
+  setFcmToken(String value) => _fcmToken = value;
 }

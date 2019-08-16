@@ -25,19 +25,26 @@ class SignInState extends State<SignIn> {
   final FocusNode _emailFocus = FocusNode();
   final FocusNode _passwordFocus = FocusNode();
 
-  String _email = "";
-  String _password = "";
+  TextEditingController _emailController;
+  TextEditingController _passwordController;
+
+  UserData _userData = new UserData();
 
   @override
   void initState() {
     super.initState();
+    var email = "";
+    var pwd = "";
+
     if (this.argument is UserData) {
-      UserData userData = this.argument;
-      setState(() {
-        _email = userData.email;
-        _password = userData.password;
-      });
+      this._userData = this.argument;
+      email = _userData.email;
+      pwd = _userData.password;
     }
+    _emailController = new TextEditingController(text: email);
+    _passwordController = new TextEditingController(text: pwd);
+    _emailController.addListener(onChangeEmail);
+    _passwordController.addListener(onChangePassword);
   }
 
   @override
@@ -58,13 +65,7 @@ class SignInState extends State<SignIn> {
               child: Column(
                 children: <Widget>[
                   MyInputFormField(
-                    initialValue: _email,
                     validator: validateEmail,
-                    onSaved: (value) {
-                      setState(() {
-                        _email = value;
-                      });
-                    },
                     labelText: "이메일(Email)",
                     hintText: "이메일을 입력하세요",
                     autofocus: true,
@@ -74,17 +75,12 @@ class SignInState extends State<SignIn> {
                     onFieldSubmitted: (term) {
                       _fieldFocusChange(context, _emailFocus, _passwordFocus);
                     },
+                    controller: _emailController,
                   ),
                   Padding(
                     padding: const EdgeInsets.only(top: 20.0),
                     child: MyInputFormField(
-                      initialValue: _password,
                       validator: validatePassword,
-                      onSaved: (value) {
-                        setState(() {
-                          _password = value;
-                        });
-                      },
                       labelText: "비밀번호(Password)",
                       hintText: "비밀번호를 입력해주세요",
                       obsecureText: true,
@@ -94,15 +90,13 @@ class SignInState extends State<SignIn> {
                       onFieldSubmitted: (term) {
                         _passwordFocus.unfocus();
                       },
+                      controller: _passwordController,
                     ),
                   ),
                   Padding(
                     padding: const EdgeInsets.only(top: 20.0),
                     child: SubmitButton(
-                      formKey: _formKey,
-                      email: _email,
-                      password: _password,
-                    ),
+                        formKey: _formKey, userData: this._userData),
                   ),
                 ],
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -113,34 +107,43 @@ class SignInState extends State<SignIn> {
       ),
     );
   }
+
+  onChangeEmail() {
+    var text = _emailController.text;
+    setState(() {
+      this._userData.setEmail(text);
+    });
+  }
+
+  onChangePassword() {
+    var text = _passwordController.text;
+    setState(() {
+      this._userData.setPassword(text);
+    });
+  }
 }
 
 class SubmitButton extends StatefulWidget {
   SubmitButton({
     @required this.formKey,
-    @required this.email,
-    @required this.password,
+    @required this.userData,
     Key key,
   }) : super(key: key);
   final GlobalKey<FormState> formKey;
-  final String email;
-  final String password;
+  final UserData userData;
 
   @override
   SubmitButtonState createState() => SubmitButtonState(
         formKey: formKey,
-        email: email,
-        password: password,
+        userData: userData,
       );
 }
 
 class SubmitButtonState extends State<SubmitButton> {
-  SubmitButtonState(
-      {@required this.formKey, @required this.email, @required this.password});
+  SubmitButtonState({@required this.formKey, @required this.userData});
 
   final GlobalKey<FormState> formKey;
-  final String email;
-  final String password;
+  final UserData userData;
   bool isLoading = false;
 
   @override
@@ -185,8 +188,10 @@ class SubmitButtonState extends State<SubmitButton> {
       isLoading = true;
     });
     try {
-      var response =
-          await client.post(url, body: {"id": email, "password": password});
+      var response = await client.post(url, body: {
+        "id": this.userData.email,
+        "password": this.userData.password
+      });
       var message = "로그인에 실패했습니다.";
       var parsedBody = json.decode(response.body);
       if (response.statusCode == 200) {
