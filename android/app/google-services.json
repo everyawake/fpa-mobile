@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "738411240976",
+    "firebase_url": "https://finger-print-authenticate.firebaseio.com",
+    "project_id": "finger-print-authenticate",
+    "storage_bucket": "finger-print-authenticate.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:738411240976:android:d185e041243d323e",
+        "android_client_info": {
+          "package_name": "com.everyawake.fpa_flutter"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "738411240976-jcq7ibji850fp5275g3njg37nlnpsrlv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAea7qeH6GJvwPcTv66NDeWNyIYdG7HaD0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "738411240976-jcq7ibji850fp5275g3njg37nlnpsrlv.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

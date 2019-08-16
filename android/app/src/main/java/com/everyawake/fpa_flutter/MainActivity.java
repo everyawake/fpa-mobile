@@ -1,4 +1,4 @@
-package com.example.fpa_flutter;
+package com.everyawake.fpa_flutter;
 
 import android.os.Bundle;
 import io.flutter.app.FlutterActivity;
