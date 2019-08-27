@@ -16,11 +16,6 @@ class MyApp extends StatelessWidget {
       ),
       initialRoute: "/",
       home: MyHomePage(),
-      // routes: <String, WidgetBuilder>{
-      //   "/": (context) => MyHomePage(),
-      //   "/signup": (context) => SignUp(),
-      //   "/signin": (context) => SignIn(),
-      // },
       onGenerateRoute: (RouteSettings settings) {
         switch (settings.name) {
           case "/":
@@ -29,9 +24,10 @@ class MyApp extends StatelessWidget {
             return MaterialPageRoute(builder: (context) => SignUp());
           case "/signin":
             return MaterialPageRoute(
-                builder: (context) => SignIn(
-                      argument: settings.arguments,
-                    ));
+              builder: (context) => SignIn(
+                argument: settings.arguments,
+              ),
+            );
         }
       },
     );
