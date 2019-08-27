@@ -1,25 +1,23 @@
 import 'dart:convert';
 
 import 'package:FPA/helpers/authToken.dart';
+import 'package:FPA/models/routeArguments.dart';
+import 'package:FPA/models/signUp.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 import 'package:FPA/components/formInput.dart';
 import 'package:FPA/helpers/validators.dart';
-import 'package:FPA/pages/signUp.dart';
 
 class SignIn extends StatefulWidget {
-  SignIn({this.argument, Key key}) : super(key: key);
-  final argument;
+  SignIn({this.arguments, Key key}) : super(key: key);
+  final SignInRoutingArgument arguments;
 
   @override
-  SignInState createState() => SignInState(argument: this.argument);
+  SignInState createState() => SignInState();
 }
 
 class SignInState extends State<SignIn> {
-  SignInState({this.argument});
-  final argument;
-
   final _formKey = GlobalKey<FormState>();
   final FocusNode _emailFocus = FocusNode();
   final FocusNode _passwordFocus = FocusNode();
@@ -35,8 +33,8 @@ class SignInState extends State<SignIn> {
     var email = "";
     var pwd = "";
 
-    if (this.argument is UserData) {
-      this._userData = this.argument;
+    if (widget.arguments.userData is UserData) {
+      this._userData = widget.arguments.userData;
       email = _userData.email;
       pwd = _userData.password;
     }
@@ -110,14 +108,14 @@ class SignInState extends State<SignIn> {
   onChangeEmail() {
     var text = _emailController.text;
     setState(() {
-      this._userData.setEmail(text);
+      this._userData.email = text;
     });
   }
 
   onChangePassword() {
     var text = _passwordController.text;
     setState(() {
-      this._userData.setPassword(text);
+      this._userData.password = text;
     });
   }
 }

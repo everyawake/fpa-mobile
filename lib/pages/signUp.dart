@@ -1,6 +1,6 @@
-import 'dart:convert';
-
-import 'package:FPA/helpers/authToken.dart';
+import 'package:FPA/env.dart';
+import 'package:FPA/models/routeArguments.dart';
+import 'package:FPA/models/signUp.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -37,7 +37,7 @@ class SignUpState extends State<SignUp> {
   void initState() {
     super.initState();
     _firebaseMessaging.getToken().then((token) {
-      this._data._fcmToken = token;
+      this._data.fcmToken = token;
     });
   }
 
@@ -62,7 +62,7 @@ class SignUpState extends State<SignUp> {
                 MyInputFormField(
                   validator: validateEmail,
                   onSaved: (value) {
-                    this._data._email = value;
+                    this._data.email = value;
                     setState(() {
                       _email = value;
                     });
@@ -82,7 +82,7 @@ class SignUpState extends State<SignUp> {
                   child: MyInputFormField(
                     validator: validatePassword,
                     onSaved: (value) {
-                      this._data._password = value;
+                      this._data.password = value;
                       setState(() {
                         _password = value;
                       });
@@ -128,7 +128,7 @@ class SignUpState extends State<SignUp> {
                   child: MyInputFormField(
                     validator: validateUsername,
                     onSaved: (value) {
-                      this._data._username = value;
+                      this._data.username = value;
                       setState(() {
                         _username = value;
                       });
@@ -215,7 +215,7 @@ class SubmitButtonState extends State<SubmitButton> {
   }
 
   _submitSignUp(BuildContext ctx) async {
-    var url = "http://192.168.1.192:3000/users/signup";
+    var url = API_ENDPOINT + "/users/signup";
     var client = new http.Client();
     setState(() {
       isLoading = true;
@@ -243,8 +243,8 @@ class SubmitButtonState extends State<SubmitButton> {
         ),
       );
 
-      Navigator.of(context)
-          .pushReplacementNamed("/signin", arguments: this.userData);
+      Navigator.of(context).pushReplacementNamed("/signin",
+          arguments: new SignInRoutingArgument(userData: this.userData));
     } finally {
       client.close();
       setState(() {
@@ -261,28 +261,4 @@ _fieldFocusChange(
 ) {
   currentFocus.unfocus();
   FocusScope.of(context).requestFocus(nextFocus);
-}
-
-class UserData {
-  String _email = "";
-  String _password = "";
-  String _username = "";
-  String _fcmToken = "";
-
-  UserData({String email, String password, String username, String fcmToken}) {
-    this._email = email;
-    this._password = password;
-    this._username = username;
-    this._fcmToken = fcmToken;
-  }
-
-  String get email => _email;
-  String get password => _password;
-  String get username => _username;
-  String get fcmToken => _fcmToken;
-
-  setEmail(String value) => _email = value;
-  setPassword(String value) => _password = value;
-  setUsername(String value) => _username = value;
-  setFcmToken(String value) => _fcmToken = value;
 }

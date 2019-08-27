@@ -25,7 +25,7 @@ class MyApp extends StatelessWidget {
           case "/signin":
             return MaterialPageRoute(
               builder: (context) => SignIn(
-                argument: settings.arguments,
+                arguments: settings.arguments,
               ),
             );
         }
