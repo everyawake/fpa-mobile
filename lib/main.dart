@@ -1,3 +1,5 @@
+import 'package:FPA/helpers/authToken.dart';
+import 'package:FPA/pages/profile.dart';
 import 'package:FPA/pages/signin.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -25,7 +27,7 @@ class MyApp extends StatelessWidget {
           case "/signin":
             return MaterialPageRoute(
               builder: (context) => SignIn(
-                argument: settings.arguments,
+                arguments: settings.arguments,
               ),
             );
         }
@@ -41,6 +43,25 @@ class MyHomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     this._initializeGCM();
 
+    return FutureBuilder(
+      future: AuthTokenStorage().getAuthToken(),
+      builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+        switch (snapshot.connectionState) {
+          case ConnectionState.none:
+          case ConnectionState.active:
+          case ConnectionState.waiting:
+            return CircularProgressIndicator();
+          case ConnectionState.done:
+            if (snapshot.hasData) {
+              return ProfilePage();
+            }
+            return this.renderMainHome(context);
+        }
+      },
+    );
+  }
+
+  renderMainHome(BuildContext context) {
     return Scaffold(
       backgroundColor: Color(0xFF3B3E45),
       body: Center(

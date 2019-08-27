@@ -1,25 +1,24 @@
 import 'dart:convert';
 
+import 'package:FPA/env.dart';
 import 'package:FPA/helpers/authToken.dart';
+import 'package:FPA/models/routeArguments.dart';
+import 'package:FPA/models/signUp.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 import 'package:FPA/components/formInput.dart';
 import 'package:FPA/helpers/validators.dart';
-import 'package:FPA/pages/signUp.dart';
 
 class SignIn extends StatefulWidget {
-  SignIn({this.argument, Key key}) : super(key: key);
-  final argument;
+  SignIn({this.arguments, Key key}) : super(key: key);
+  final SignInRoutingArgument arguments;
 
   @override
-  SignInState createState() => SignInState(argument: this.argument);
+  SignInState createState() => SignInState();
 }
 
 class SignInState extends State<SignIn> {
-  SignInState({this.argument});
-  final argument;
-
   final _formKey = GlobalKey<FormState>();
   final FocusNode _emailFocus = FocusNode();
   final FocusNode _passwordFocus = FocusNode();
@@ -35,8 +34,9 @@ class SignInState extends State<SignIn> {
     var email = "";
     var pwd = "";
 
-    if (this.argument is UserData) {
-      this._userData = this.argument;
+    if (widget.arguments is SignInRoutingArgument &&
+        widget.arguments.userData is UserData) {
+      this._userData = widget.arguments.userData;
       email = _userData.email;
       pwd = _userData.password;
     }
@@ -110,14 +110,14 @@ class SignInState extends State<SignIn> {
   onChangeEmail() {
     var text = _emailController.text;
     setState(() {
-      this._userData.setEmail(text);
+      this._userData.email = text;
     });
   }
 
   onChangePassword() {
     var text = _passwordController.text;
     setState(() {
-      this._userData.setPassword(text);
+      this._userData.password = text;
     });
   }
 }
@@ -181,7 +181,7 @@ class SubmitButtonState extends State<SubmitButton> {
   }
 
   _doSignIn(BuildContext ctx) async {
-    var url = "http://192.168.1.192:3000/users/signin";
+    var url = API_ENDPOINT + "/users/signin";
     var client = new http.Client();
     setState(() {
       isLoading = true;
@@ -193,11 +193,12 @@ class SubmitButtonState extends State<SubmitButton> {
       });
       var message = "로그인에 실패했습니다.";
       var parsedBody = json.decode(response.body);
+
       if (response.statusCode == 200) {
         print("!!! SignIn-token: " + parsedBody["token"]);
         print("!!! SignIn-data: " + parsedBody["data"].toString());
         message = "로그인 성공!!";
-        AuthTokenStoreage().setAuthToken(parsedBody["token"]);
+        AuthTokenStorage().setAuthToken(parsedBody["token"]);
       }
 
       Scaffold.of(ctx).showSnackBar(
