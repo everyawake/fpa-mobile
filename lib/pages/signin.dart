@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:FPA/env.dart';
 import 'package:FPA/helpers/authToken.dart';
 import 'package:FPA/models/routeArguments.dart';
 import 'package:FPA/models/signUp.dart';
@@ -33,7 +34,8 @@ class SignInState extends State<SignIn> {
     var email = "";
     var pwd = "";
 
-    if (widget.arguments.userData is UserData) {
+    if (widget.arguments is SignInRoutingArgument &&
+        widget.arguments.userData is UserData) {
       this._userData = widget.arguments.userData;
       email = _userData.email;
       pwd = _userData.password;
@@ -179,7 +181,7 @@ class SubmitButtonState extends State<SubmitButton> {
   }
 
   _doSignIn(BuildContext ctx) async {
-    var url = "http://192.168.1.192:3000/users/signin";
+    var url = API_ENDPOINT + "/users/signin";
     var client = new http.Client();
     setState(() {
       isLoading = true;
@@ -191,11 +193,12 @@ class SubmitButtonState extends State<SubmitButton> {
       });
       var message = "로그인에 실패했습니다.";
       var parsedBody = json.decode(response.body);
+
       if (response.statusCode == 200) {
         print("!!! SignIn-token: " + parsedBody["token"]);
         print("!!! SignIn-data: " + parsedBody["data"].toString());
         message = "로그인 성공!!";
-        AuthTokenStoreage().setAuthToken(parsedBody["token"]);
+        AuthTokenStorage().setAuthToken(parsedBody["token"]);
       }
 
       Scaffold.of(ctx).showSnackBar(
