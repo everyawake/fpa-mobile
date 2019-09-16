@@ -14,10 +14,14 @@ class FingerAuthPage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Text(
-              'Welcome To\nFPA',
-              style: TextStyle(color: Colors.white, fontSize: 32.0),
-              textAlign: TextAlign.center,
+            Icon(Icons.fingerprint, color: Colors.white, size: 128.0),
+            Padding(
+              padding: const EdgeInsets.only(top: 16.0),
+              child: Text(
+                'Reqeust from [${this.notiData.thirdPartyName}]',
+                style: TextStyle(color: Colors.white, fontSize: 12.0),
+                textAlign: TextAlign.center,
+              ),
             ),
           ],
         ),
