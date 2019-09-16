@@ -1,4 +1,6 @@
 import 'package:FPA/helpers/authToken.dart';
+import 'package:FPA/models/pushNotification.dart';
+import 'package:FPA/pages/fingerAuth.dart';
 import 'package:FPA/pages/profile.dart';
 import 'package:FPA/pages/signin.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -30,6 +32,12 @@ class MyApp extends StatelessWidget {
                 arguments: settings.arguments,
               ),
             );
+          case "/fpaRequest":
+            return MaterialPageRoute(
+              builder: (context) => FingerAuthPage(
+                notiData: settings.arguments,
+              ),
+            );
         }
       },
     );
@@ -41,7 +49,7 @@ class MyHomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    this._initializeGCM();
+    this._initializeGCM(context);
 
     return FutureBuilder(
       future: AuthTokenStorage().getAuthToken(),
@@ -96,11 +104,21 @@ class MyHomePage extends StatelessWidget {
     );
   }
 
-  _initializeGCM() {
+  _initializeGCM(BuildContext context) {
     _firebaseMessaging.requestNotificationPermissions();
     _firebaseMessaging.configure(
       onMessage: (Map<String, dynamic> message) {
-        print('onMessage $message');
+        print('onMessage >>> ${message}');
+        var pushData = message["data"];
+
+        if (pushData["page"] == "AUTH_REQUEST") {
+          print('onMessage >> pageMove');
+          Navigator.of(context).pushReplacementNamed("/fpaRequest",
+              arguments: new PushNotification(
+                  page: pushData["page"],
+                  thirdPartyName: pushData["thirdPartyName"],
+                  socketId: pushData["socketId"]));
+        }
       },
       onResume: (Map<String, dynamic> message) {
         print('onResume $message');
