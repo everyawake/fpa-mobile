@@ -60,7 +60,7 @@ class MyHomePage extends StatelessWidget {
           case ConnectionState.waiting:
             return CircularProgressIndicator();
           case ConnectionState.done:
-            if (snapshot.hasData) {
+            if (snapshot.hasData && snapshot.data.isNotEmpty) {
               return ProfilePage();
             }
             return this.renderMainHome(context);

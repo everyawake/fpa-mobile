@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:FPA/components/otid.dart';
+import 'package:FPA/components/solidButtons.dart';
 import 'package:FPA/env.dart';
 import 'package:FPA/helpers/authToken.dart';
 import 'package:FPA/models/profile.dart';
@@ -68,7 +69,18 @@ class ProfilePageState extends State<ProfilePage> {
                 ],
               );
             }
-            return Text("정보 없음"); // TODO: 로그인 버튼 혹은 => 메인페이지로 리다이렉트
+            return Column(
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 12.0),
+                  child: Text("정보 없음"),
+                ),
+                SolidButton(
+                  text: "로그인하러 가기",
+                  onClick: _gotoMainPage,
+                )
+              ],
+            );
         }
       },
     );
@@ -96,5 +108,10 @@ class ProfilePageState extends State<ProfilePage> {
     }
 
     return data;
+  }
+
+  _gotoMainPage() {
+    AuthTokenStorage().setAuthToken(null);
+    Navigator.of(context).pushReplacementNamed("/");
   }
 }

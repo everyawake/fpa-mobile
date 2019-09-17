@@ -199,6 +199,7 @@ class SubmitButtonState extends State<SubmitButton> {
         print("!!! SignIn-data: " + parsedBody["data"].toString());
         message = "로그인 성공!!";
         AuthTokenStorage().setAuthToken(parsedBody["token"]);
+        Navigator.of(ctx).pushReplacementNamed("/");
       }
 
       Scaffold.of(ctx).showSnackBar(
