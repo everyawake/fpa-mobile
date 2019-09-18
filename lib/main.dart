@@ -113,7 +113,7 @@ class MyHomePage extends StatelessWidget {
 
         if (pushData["page"] == "AUTH_REQUEST") {
           print('onMessage >> pageMove');
-          Navigator.of(context).pushReplacementNamed("/fpaRequest",
+          Navigator.of(context).pushNamed("/fpaRequest",
               arguments: new PushNotification(
                   page: pushData["page"],
                   thirdPartyName: pushData["thirdPartyName"],

@@ -1,6 +1,11 @@
+import 'dart:ffi';
+import 'dart:io';
+
 import 'package:FPA/models/pushNotification.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:local_auth/local_auth.dart';
 
 class FingerAuthPage extends StatelessWidget {
   FingerAuthPage({this.notiData});
@@ -8,6 +13,8 @@ class FingerAuthPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    this._getBiometrics(context);
+
     return Scaffold(
       backgroundColor: Color(0xFF3B3E45),
       body: Center(
@@ -27,5 +34,29 @@ class FingerAuthPage extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  _getBiometrics(BuildContext context) async {
+    final _auth = LocalAuthentication();
+    List<BiometricType> availableBiometrics =
+        await _auth.getAvailableBiometrics();
+    bool isAuthenticated = false;
+
+    if (Platform.isAndroid) {
+      if (availableBiometrics.contains(BiometricType.fingerprint)) {
+        try {
+          isAuthenticated = await _auth.authenticateWithBiometrics(
+            localizedReason: "Finger up",
+            useErrorDialogs: true,
+            stickyAuth: true,
+          );
+        } on PlatformException catch (e) {
+          print("!!! err ${e}");
+        }
+      }
+    }
+
+    print("!!!! AUTH DONE: ${isAuthenticated}");
+    Navigator.of(context).pop();
   }
 }
