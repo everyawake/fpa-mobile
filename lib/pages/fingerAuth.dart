@@ -46,7 +46,7 @@ class FingerAuthPage extends StatelessWidget {
       if (availableBiometrics.contains(BiometricType.fingerprint)) {
         try {
           isAuthenticated = await _auth.authenticateWithBiometrics(
-            localizedReason: "Finger up",
+            localizedReason: "손가락을 올려주세요",
             useErrorDialogs: true,
             stickyAuth: true,
           );
