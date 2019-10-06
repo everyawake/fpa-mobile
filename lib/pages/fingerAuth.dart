@@ -54,21 +54,22 @@ class FingerAuthPage extends StatelessWidget {
             useErrorDialogs: true,
             stickyAuth: true,
           );
+
+          if (isAuthenticated) {
+            authState = "user-auth-done";
+          } else {
+            authState = "user-auth-failed";
+          }
+
+          await _sendAuthData(authState);
+
+          Navigator.of(context).pop();
         } on PlatformException catch (e) {
           print("!!! err ${e}");
+          await _sendAuthData("user-auth-failed");
         }
       }
     }
-
-    if (isAuthenticated) {
-      authState = "user-auth-done";
-    } else {
-      authState = "user-auth-failed";
-    }
-
-    await _sendAuthData(authState);
-
-    Navigator.of(context).pop();
   }
 
   _sendAuthData(String authState) async {
@@ -76,15 +77,13 @@ class FingerAuthPage extends StatelessWidget {
     var client = new http.Client();
     var _userToken = await AuthTokenStorage().getAuthToken();
 
-    var fpaData =
-        FpaSendData(channelId: this.notiData.socketId, authStatus: authState);
-
     try {
-      await client.post(url,
-          headers: {
-            "fpa-authenticate-token": _userToken,
-          },
-          body: fpaData);
+      await client.post(url, headers: {
+        "fpa-authenticate-token": _userToken,
+      }, body: {
+        "channelId": this.notiData.socketId,
+        "authStatus": authState
+      });
     } catch (err) {
       client.close();
       print("!!!! err ${err}");

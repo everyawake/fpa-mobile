@@ -109,6 +109,7 @@ class MyHomePage extends StatelessWidget {
     _firebaseMessaging.configure(
       onMessage: (Map<String, dynamic> message) {
         print('onMessage >>> ${message}');
+        var notiInfo = message["notification"];
         var pushData = message["data"];
 
         if (pushData["page"] == "AUTH_REQUEST") {
