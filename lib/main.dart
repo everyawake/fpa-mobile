@@ -127,5 +127,9 @@ class MyHomePage extends StatelessWidget {
         print('onLaunch $message');
       },
     );
+
+    _firebaseMessaging.getToken().then((token) {
+      print("Current device FCM Token: ${token}");
+    });
   }
 }
