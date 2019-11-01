@@ -107,13 +107,15 @@ class MyHomePage extends StatelessWidget {
   _initializeGCM(BuildContext context) {
     _firebaseMessaging.requestNotificationPermissions();
     _firebaseMessaging.configure(
-      onMessage: (Map<String, dynamic> message) {
+      onMessage: (Map<String, dynamic> message) { // push message를 받았을때.
         print('onMessage >>> ${message}');
         var notiInfo = message["notification"];
         var pushData = message["data"];
 
-        if (pushData["page"] == "AUTH_REQUEST") {
+        if (pushData["page"] == "AUTH_REQUEST") { // push message가 지문인식 요청일때.
           print('onMessage >> pageMove');
+          
+          // 지문인식 페이지로 이동(/pages/fingerAuth.dart)
           Navigator.of(context).pushNamed("/fpaRequest",
               arguments: new PushNotification(
                   page: pushData["page"],
